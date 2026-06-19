@@ -102,6 +102,11 @@ class SqlTablesMixin:  # pylint: disable=too-few-public-methods
                 ).tables
             )
         except (SupersetSecurityException, SupersetParseError, TemplateError):
+            logger.debug(
+                "Unable to extract tables from SQL (parse/security): %s",
+                type(self).__name__,
+                exc_info=True,
+            )
             return []
         except SupersetException as ex:
             # Jinja macros such as ``{{ dataset(id) }}`` or ``{{ metric(...) }}``
@@ -519,7 +524,7 @@ class SavedQuery(
 
     @property
     def pop_tab_link(self) -> Markup:
-        return Markup(
+        return Markup(  # noqa: S704
             f"""
             <a href="/sqllab?savedQueryId={self.id}">
                 <i class="fa fa-link"></i>

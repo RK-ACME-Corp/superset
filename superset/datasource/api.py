@@ -51,8 +51,9 @@ class DatasourceRestApi(BaseSupersetApi):
     @safe
     @statsd_metrics
     @event_logger.log_this_with_context(
-        action=lambda self, *args, **kwargs: f"{self.__class__.__name__}"
-        f".get_column_values",
+        action=lambda self, *args, **kwargs: (
+            f"{self.__class__.__name__}.get_column_values"
+        ),
         log_to_statsd=False,
     )
     def get_column_values(
@@ -152,8 +153,9 @@ class DatasourceRestApi(BaseSupersetApi):
     @safe
     @statsd_metrics
     @event_logger.log_this_with_context(
-        action=lambda self, *args, **kwargs: f"{self.__class__.__name__}"
-        f".validate_expression",
+        action=lambda self, *args, **kwargs: (
+            f"{self.__class__.__name__}.validate_expression"
+        ),
         log_to_statsd=False,
     )
     def validate_expression(
@@ -266,6 +268,7 @@ class DatasourceRestApi(BaseSupersetApi):
                 ),
             )
         except Exception as ex:
+            logger.exception("Error validating expression")
             return self.response(500, message=f"Error validating expression: {str(ex)}")
 
     def _get_datasource_for_validation(

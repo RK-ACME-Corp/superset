@@ -67,7 +67,7 @@ def get_current_user() -> Optional[User]:
         from flask import g
 
         return getattr(g, "user", None)
-    except Exception:
+    except RuntimeError:
         return None
 
 

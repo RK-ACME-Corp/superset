@@ -175,6 +175,10 @@ class HiveEngineSpec(PrestoEngineSpec):
         try:
             return super().fetch_data(cursor, limit)
         except pyhive.exc.ProgrammingError:
+            logger.warning(
+                "ProgrammingError while fetching Hive data; returning empty result",
+                exc_info=True,
+            )
             return []
 
     @classmethod
