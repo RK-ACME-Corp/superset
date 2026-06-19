@@ -58,7 +58,7 @@ class TestQueryApi(SupersetTestCase):
         start_running_time: float | None = None,
         end_time: float | None = None,
     ) -> Query:
-        database = db.session.query(Database).get(database_id)
+        database = db.session.get(Database, database_id)
         user = db.session.query(security_manager.user_model).get(user_id)
         query = Query(
             database=database,

@@ -622,7 +622,7 @@ class TestReportSchedulesApi(SupersetTestCase):
         rv = self.post_assert_metric(uri, report_schedule_data, "post")
         data = json.loads(rv.data.decode("utf-8"))
         assert rv.status_code == 201
-        created_model = db.session.query(ReportSchedule).get(data.get("id"))
+        created_model = db.session.get(ReportSchedule, data.get("id"))
         assert created_model is not None
         assert created_model.name == report_schedule_data["name"]
         assert created_model.grace_period == report_schedule_data["grace_period"]
@@ -675,7 +675,7 @@ class TestReportSchedulesApi(SupersetTestCase):
         data = json.loads(rv.data.decode("utf-8"))
 
         # Rollback changes
-        created_model = db.session.query(ReportSchedule).get(data.get("id"))
+        created_model = db.session.get(ReportSchedule, data.get("id"))
         db.session.delete(created_model)
         db.session.commit()
 
@@ -1519,7 +1519,7 @@ class TestReportSchedulesApi(SupersetTestCase):
 
         rv = self.put_assert_metric(uri, report_schedule_data, "put")
         assert rv.status_code == 200
-        updated_model = db.session.query(ReportSchedule).get(report_schedule.id)
+        updated_model = db.session.get(ReportSchedule, report_schedule.id)
         assert updated_model is not None
         assert updated_model.name == report_schedule_data["name"]
         assert updated_model.description == report_schedule_data["description"]
@@ -2245,9 +2245,7 @@ class TestReportSchedulesApi(SupersetTestCase):
         uri = f"api/v1/report/{report_schedule.id}"
         rv = self.delete_assert_metric(uri, "delete")
         assert rv.status_code == 200
-        deleted_report_schedule = db.session.query(ReportSchedule).get(
-            report_schedule.id
-        )
+        deleted_report_schedule = db.session.get(ReportSchedule, report_schedule.id)
         assert deleted_report_schedule is None
         deleted_recipients = (
             db.session.query(ReportRecipients)
@@ -2648,7 +2646,7 @@ class TestReportSchedulesApi(SupersetTestCase):
         assert rv.status_code == 201
 
         created_id = json.loads(rv.data.decode("utf-8")).get("id")
-        created_model = db.session.query(ReportSchedule).get(created_id)
+        created_model = db.session.get(ReportSchedule, created_id)
         db.session.delete(created_model)
         db.session.delete(dashboard)
         db.session.commit()

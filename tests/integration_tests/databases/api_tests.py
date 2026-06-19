@@ -286,7 +286,7 @@ class TestDatabaseApi(SupersetTestCase):
         response = json.loads(rv.data.decode("utf-8"))
         assert rv.status_code == 201
         # Cleanup
-        model = db.session.query(Database).get(response.get("id"))
+        model = db.session.get(Database, response.get("id"))
         assert model.configuration_method == ConfigurationMethod.SQLALCHEMY_FORM
         db.session.delete(model)
         db.session.commit()
@@ -333,7 +333,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert response.get("result")["ssh_tunnel"]["password"] == "XXXXXXXXXX"  # noqa: S105
         assert model_ssh_tunnel.database_id == response.get("id")
         # Cleanup
-        model = db.session.query(Database).get(response.get("id"))
+        model = db.session.get(Database, response.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -383,7 +383,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert response.get("result")["ssh_tunnel"]["password"] == "XXXXXXXXXX"  # noqa: S105
         assert model_ssh_tunnel.database_id == response.get("id")
         # Cleanup
-        model = db.session.query(Database).get(response.get("id"))
+        model = db.session.get(Database, response.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -487,7 +487,7 @@ class TestDatabaseApi(SupersetTestCase):
         )
         assert model_ssh_tunnel.database_id == response_update.get("id")
         # Cleanup
-        model = db.session.query(Database).get(response.get("id"))
+        model = db.session.get(Database, response.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -550,7 +550,7 @@ class TestDatabaseApi(SupersetTestCase):
         )
         assert model_ssh_tunnel.database_id == response_update.get("id")
         # Cleanup
-        model = db.session.query(Database).get(response.get("id"))
+        model = db.session.get(Database, response.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -609,7 +609,7 @@ class TestDatabaseApi(SupersetTestCase):
         )
 
         # Cleanup
-        model = db.session.query(Database).get(response_create.get("id"))
+        model = db.session.get(Database, response_create.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -689,7 +689,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert model_ssh_tunnel is None
 
         # Cleanup
-        model = db.session.query(Database).get(response.get("id"))
+        model = db.session.get(Database, response.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -766,7 +766,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert model_ssh_tunnel.server_address == "123.132.123.1"
         assert model_ssh_tunnel.server_port == 8080
         # Cleanup
-        model = db.session.query(Database).get(response.get("id"))
+        model = db.session.get(Database, response.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -812,7 +812,7 @@ class TestDatabaseApi(SupersetTestCase):
         )
         assert model_ssh_tunnel.database_id == response.get("id")
         # Cleanup
-        model = db.session.query(Database).get(response.get("id"))
+        model = db.session.get(Database, response.get("id"))
         db.session.delete(model)
         db.session.commit()
         model_ssh_tunnel = (
@@ -940,7 +940,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert model_ssh_tunnel.database_id == response.get("id")
         assert response.get("result")["ssh_tunnel"] == response_ssh_tunnel
         # Cleanup
-        model = db.session.query(Database).get(response.get("id"))
+        model = db.session.get(Database, response.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -1086,7 +1086,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert "sqlalchemy_form" in response["result"]["configuration_method"]
 
         # Cleanup
-        model = db.session.query(Database).get(response.get("id"))
+        model = db.session.get(Database, response.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -1338,7 +1338,7 @@ class TestDatabaseApi(SupersetTestCase):
         rv = self.client.put(uri, json=database_data)
         assert rv.status_code == 200
         # Cleanup
-        model = db.session.query(Database).get(test_database.id)
+        model = db.session.get(Database, test_database.id)
         db.session.delete(model)
         db.session.commit()
 
@@ -1368,7 +1368,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert rv.status_code == 422
         assert response == expected_response
         # Cleanup
-        model = db.session.query(Database).get(test_database.id)
+        model = db.session.get(Database, test_database.id)
         db.session.delete(model)
         db.session.commit()
 
@@ -1394,7 +1394,7 @@ class TestDatabaseApi(SupersetTestCase):
         rv = self.client.put(uri, json=database_data)
         assert rv.status_code == 200
         # Cleanup
-        model = db.session.query(Database).get(test_database.id)
+        model = db.session.get(Database, test_database.id)
         db.session.delete(model)
         db.session.commit()
 
@@ -1516,7 +1516,7 @@ class TestDatabaseApi(SupersetTestCase):
         uri = f"api/v1/database/{database_id}"
         rv = self.delete_assert_metric(uri, "delete")
         assert rv.status_code == 200
-        model = db.session.query(Database).get(database_id)
+        model = db.session.get(Database, database_id)
         assert model is None
 
     def test_delete_database_not_found(self):
@@ -4398,8 +4398,8 @@ class TestDatabaseApi(SupersetTestCase):
             base_filter_mock.assert_called()
 
         # Cleanup
-        first_model = db.session.query(Database).get(first_response.get("id"))
-        second_model = db.session.query(Database).get(second_response.get("id"))
+        first_model = db.session.get(Database, first_response.get("id"))
+        second_model = db.session.get(Database, second_response.get("id"))
         db.session.delete(first_model)
         db.session.delete(second_model)
         db.session.commit()
@@ -4423,7 +4423,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert response == {"message": "Permissions successfully synced"}
 
         # Cleanup
-        model = db.session.query(Database).get(db_conn_id)
+        model = db.session.get(Database, db_conn_id)
         db.session.delete(model)
         db.session.commit()
 
@@ -4460,7 +4460,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert rv.status_code == 500
 
         # Cleanup
-        model = db.session.query(Database).get(test_database.id)
+        model = db.session.get(Database, test_database.id)
         db.session.delete(model)
         db.session.commit()
 
@@ -4489,7 +4489,7 @@ class TestDatabaseApi(SupersetTestCase):
         )
 
         # Cleanup
-        model = db.session.query(Database).get(db_conn_id)
+        model = db.session.get(Database, db_conn_id)
         db.session.delete(model)
         db.session.commit()
 
@@ -4526,7 +4526,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert rv.status_code == 500
 
         # Cleanup
-        model = db.session.query(Database).get(test_database.id)
+        model = db.session.get(Database, test_database.id)
         db.session.delete(model)
         db.session.commit()
 
@@ -4551,7 +4551,7 @@ class TestDatabaseApi(SupersetTestCase):
         assert rv.status_code == 500
 
         # Cleanup
-        model = db.session.query(Database).get(test_database.id)
+        model = db.session.get(Database, test_database.id)
         db.session.delete(model)
         db.session.commit()
 
@@ -4573,6 +4573,6 @@ class TestDatabaseApi(SupersetTestCase):
         assert rv.status_code == 403
 
         # Cleanup
-        model = db.session.query(Database).get(test_database.id)
+        model = db.session.get(Database, test_database.id)
         db.session.delete(model)
         db.session.commit()

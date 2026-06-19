@@ -720,7 +720,7 @@ class TestDatasetApi(SupersetTestCase):
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
         table_id = data.get("id")
-        model = db.session.query(SqlaTable).get(table_id)
+        model = db.session.get(SqlaTable, table_id)
         assert model.table_name == table_data["table_name"]
         assert model.database_id == table_data["database"]
         # normalize_columns should default to False
@@ -769,7 +769,7 @@ class TestDatasetApi(SupersetTestCase):
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
         table_id = data.get("id")
-        model = db.session.query(SqlaTable).get(table_id)
+        model = db.session.get(SqlaTable, table_id)
         assert model.table_name == table_data["table_name"]
         assert model.database_id == table_data["database"]
         assert model.normalize_columns is True
@@ -812,7 +812,7 @@ class TestDatasetApi(SupersetTestCase):
         rv = self.post_assert_metric(uri, table_data, "post")
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        model = db.session.query(SqlaTable).get(data.get("id"))
+        model = db.session.get(SqlaTable, data.get("id"))
         assert admin in model.owners
         assert alpha in model.owners
         self.items_to_delete = [model]
@@ -859,7 +859,7 @@ class TestDatasetApi(SupersetTestCase):
         rv = self.post_assert_metric("/api/v1/dataset/", table_data, "post")
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        model = db.session.query(SqlaTable).get(data.get("id"))
+        model = db.session.get(SqlaTable, data.get("id"))
         assert admin in model.owners
         assert alpha in model.owners
         self.items_to_delete = [model]
@@ -883,7 +883,7 @@ class TestDatasetApi(SupersetTestCase):
         rv = self.post_assert_metric("/api/v1/dataset/", table_data, "post")
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        model = db.session.query(SqlaTable).get(data.get("id"))
+        model = db.session.get(SqlaTable, data.get("id"))
         assert model.currency_code_column == "currency"
         self.items_to_delete = [model]
 
@@ -1063,7 +1063,7 @@ class TestDatasetApi(SupersetTestCase):
         uri = f"api/v1/dataset/{dataset.id}"
         rv = self.put_assert_metric(uri, dataset_data, "put")
         assert rv.status_code == 200
-        model = db.session.query(SqlaTable).get(dataset.id)
+        model = db.session.get(SqlaTable, dataset.id)
         assert model.owners == current_owners
 
         self.items_to_delete = [dataset]
@@ -1079,7 +1079,7 @@ class TestDatasetApi(SupersetTestCase):
         uri = f"api/v1/dataset/{dataset.id}"
         rv = self.put_assert_metric(uri, dataset_data, "put")
         assert rv.status_code == 200
-        model = db.session.query(SqlaTable).get(dataset.id)
+        model = db.session.get(SqlaTable, dataset.id)
         assert model.owners == []
 
         self.items_to_delete = [dataset]
@@ -1096,7 +1096,7 @@ class TestDatasetApi(SupersetTestCase):
         uri = f"api/v1/dataset/{dataset.id}"
         rv = self.put_assert_metric(uri, dataset_data, "put")
         assert rv.status_code == 200
-        model = db.session.query(SqlaTable).get(dataset.id)
+        model = db.session.get(SqlaTable, dataset.id)
         assert model.owners == [gamma]
 
         self.items_to_delete = [dataset]
@@ -1113,7 +1113,7 @@ class TestDatasetApi(SupersetTestCase):
         uri = f"api/v1/dataset/{dataset.id}"
         rv = self.put_assert_metric(uri, dataset_data, "put")
         assert rv.status_code == 200
-        model = db.session.query(SqlaTable).get(dataset.id)
+        model = db.session.get(SqlaTable, dataset.id)
         assert model.description == dataset_data["description"]
         assert model.owners == current_owners
 
@@ -1694,7 +1694,7 @@ class TestDatasetApi(SupersetTestCase):
         rv = self.put_assert_metric(uri, dataset_data, "put")
         assert rv.status_code == 200
 
-        model = db.session.query(SqlaTable).get(dataset.id)
+        model = db.session.get(SqlaTable, dataset.id)
         assert model.folders == [
             {
                 "uuid": "b49ac3dd-c79b-42a4-9082-39ee74f3b369",
@@ -1756,7 +1756,7 @@ class TestDatasetApi(SupersetTestCase):
             rv = self.put_assert_metric(uri, payload, "put")
             assert rv.status_code == 200
 
-            model = db.session.query(SqlaTable).get(dataset.id)
+            model = db.session.get(SqlaTable, dataset.id)
             assert model.database == new_db_connection
             # Catalog should have been updated to new connection's default catalog
             assert model.catalog == "new_default_catalog"
@@ -1792,7 +1792,7 @@ class TestDatasetApi(SupersetTestCase):
             rv = self.put_assert_metric(uri, payload, "put")
             assert rv.status_code == 200
 
-        model = db.session.query(SqlaTable).get(dataset.id)
+        model = db.session.get(SqlaTable, dataset.id)
         assert model.database == new_db_connection
         # Catalog was not changed as not provided and multi-catalog is enabled
         assert model.catalog == "old_default_catalog"
@@ -1840,7 +1840,7 @@ class TestDatasetApi(SupersetTestCase):
             rv = self.put_assert_metric(uri, payload, "put")
             assert rv.status_code == 200
 
-            model = db.session.query(SqlaTable).get(dataset.id)
+            model = db.session.get(SqlaTable, dataset.id)
             assert model.catalog == "other_catalog"
 
         self.items_to_delete = [dataset, db_connection]
@@ -1939,7 +1939,7 @@ class TestDatasetApi(SupersetTestCase):
             rv = self.put_assert_metric(uri, payload, "put")
             assert rv.status_code == 200
 
-        model = db.session.query(SqlaTable).get(first_schema_dataset.id)
+        model = db.session.get(SqlaTable, first_schema_dataset.id)
         assert model.database == new_db_connection
         assert model.schema == "second_schema"
 
@@ -2022,7 +2022,7 @@ class TestDatasetApi(SupersetTestCase):
         uri = f"api/v1/dataset/{dataset.id}/column/{column_id}"
         rv = self.client.delete(uri)
         assert rv.status_code == 200
-        assert db.session.query(TableColumn).get(column_id) is None  # noqa: E711
+        assert db.session.get(TableColumn, column_id) is None  # noqa: E711
 
     @pytest.mark.usefixtures("create_datasets")
     def test_delete_dataset_column_not_found(self):
@@ -2094,7 +2094,7 @@ class TestDatasetApi(SupersetTestCase):
         uri = f"api/v1/dataset/{dataset.id}/metric/{test_metric.id}"
         rv = self.client.delete(uri)
         assert rv.status_code == 200
-        assert db.session.query(SqlMetric).get(test_metric.id) is None  # noqa: E711
+        assert db.session.get(SqlMetric, test_metric.id) is None  # noqa: E711
 
     @pytest.mark.usefixtures("create_datasets")
     def test_delete_dataset_metric_not_found(self):

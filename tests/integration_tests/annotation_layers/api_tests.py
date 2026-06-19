@@ -213,7 +213,7 @@ class TestAnnotationLayerApi(SupersetTestCase):
         rv = self.client.post(uri, json=annotation_layer_data)
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        created_model = db.session.query(AnnotationLayer).get(data.get("id"))
+        created_model = db.session.get(AnnotationLayer, data.get("id"))
         assert created_model is not None
         assert created_model.name == annotation_layer_data["name"]
         assert created_model.descr == annotation_layer_data["descr"]
@@ -263,7 +263,7 @@ class TestAnnotationLayerApi(SupersetTestCase):
         uri = f"api/v1/annotation_layer/{annotation_layer.id}"
         rv = self.client.put(uri, json=annotation_layer_data)
         assert rv.status_code == 200
-        updated_model = db.session.query(AnnotationLayer).get(annotation_layer.id)
+        updated_model = db.session.get(AnnotationLayer, annotation_layer.id)
         assert updated_model is not None
         assert updated_model.name == annotation_layer_data["name"]
         # make sure the descr hasn't updated
@@ -315,7 +315,7 @@ class TestAnnotationLayerApi(SupersetTestCase):
         uri = f"api/v1/annotation_layer/{annotation_layer.id}"
         rv = self.client.delete(uri)
         assert rv.status_code == 200
-        updated_model = db.session.query(AnnotationLayer).get(annotation_layer.id)
+        updated_model = db.session.get(AnnotationLayer, annotation_layer.id)
         assert updated_model is None
 
     @pytest.mark.usefixtures("create_annotation_layers")
@@ -531,7 +531,7 @@ class TestAnnotationLayerApi(SupersetTestCase):
         rv = self.client.post(uri, json=annotation_data)
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        created_model: Annotation = db.session.query(Annotation).get(data.get("id"))
+        created_model: Annotation = db.session.get(Annotation, data.get("id"))
         assert created_model is not None
         assert created_model.short_descr == annotation_data["short_descr"]
         assert created_model.long_descr == annotation_data["long_descr"]
@@ -606,7 +606,7 @@ class TestAnnotationLayerApi(SupersetTestCase):
         uri = f"api/v1/annotation_layer/{layer.id}/annotation/{annotation.id}"
         rv = self.client.put(uri, json=annotation_data)
         assert rv.status_code == 200
-        updated_model: Annotation = db.session.query(Annotation).get(annotation.id)
+        updated_model: Annotation = db.session.get(Annotation, annotation.id)
         assert updated_model is not None
         assert updated_model.short_descr == annotation_data["short_descr"]
         # make sure long_descr hasn't updated
@@ -695,7 +695,7 @@ class TestAnnotationLayerApi(SupersetTestCase):
         uri = f"api/v1/annotation_layer/{layer.id}/annotation/{annotation.id}"
         rv = self.client.delete(uri)
         assert rv.status_code == 200
-        updated_model = db.session.query(Annotation).get(annotation.id)
+        updated_model = db.session.get(Annotation, annotation.id)
         assert updated_model is None
 
     @pytest.mark.usefixtures("create_annotation_layers")

@@ -318,7 +318,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart_id}"
         rv = self.delete_assert_metric(uri, "delete")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart_id)
+        model = db.session.get(Slice, chart_id)
         assert model is None
 
     def test_delete_bulk_charts(self):
@@ -341,7 +341,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         expected_response = {"message": f"Deleted {chart_count} charts"}
         assert response == expected_response
         for chart_id in chart_ids:
-            model = db.session.query(Slice).get(chart_id)
+            model = db.session.get(Slice, chart_id)
             assert model is None
 
     def test_delete_bulk_chart_bad_request(self):
@@ -432,7 +432,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart_id}"
         rv = self.delete_assert_metric(uri, "delete")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart_id)
+        model = db.session.get(Slice, chart_id)
         assert model is None
 
     def test_delete_bulk_chart_admin_not_owned(self):
@@ -457,7 +457,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         assert response == expected_response
 
         for chart_id in chart_ids:
-            model = db.session.query(Slice).get(chart_id)
+            model = db.session.get(Slice, chart_id)
             assert model is None
 
     def test_delete_chart_not_owned(self):
@@ -555,7 +555,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         rv = self.post_assert_metric(uri, chart_data, "post")
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        model = db.session.query(Slice).get(data.get("id"))
+        model = db.session.get(Slice, data.get("id"))
         # uuid should be returned in the response
         assert "uuid" in data
         assert str(model.uuid) == str(data["uuid"])
@@ -576,7 +576,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         rv = self.post_assert_metric(uri, chart_data, "post")
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        model = db.session.query(Slice).get(data.get("id"))
+        model = db.session.get(Slice, data.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -700,7 +700,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart_id}"
         rv = self.put_assert_metric(uri, chart_data, "put")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart_id)
+        model = db.session.get(Slice, chart_id)
         related_dashboard = db.session.query(Dashboard).filter_by(slug="births").first()
         assert model.created_by == admin
         assert model.slice_name == "title1_changed"
@@ -735,7 +735,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart_id}"
         rv = self.put_assert_metric(uri, chart_data, "put")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart_id)
+        model = db.session.get(Slice, chart_id)
 
         response = self.get_assert_metric("api/v1/chart/", "get_list")
         res = json.loads(response.data.decode("utf-8"))["result"]
@@ -764,7 +764,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart_id}"
         rv = self.put_assert_metric(uri, chart_data, "put")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart_id)
+        model = db.session.get(Slice, chart_id)
 
         response = self.get_assert_metric(uri, "get")
         res = json.loads(response.data.decode("utf-8"))["result"]
@@ -790,7 +790,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart_id}"
         rv = self.put_assert_metric(uri, chart_data, "put")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart_id)
+        model = db.session.get(Slice, chart_id)
         assert model.slice_name == new_name
         assert alpha in model.owners
         assert gamma in model.owners
@@ -809,7 +809,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart_id}"
         rv = self.put_assert_metric(uri, chart_data, "put")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart_id)
+        model = db.session.get(Slice, chart_id)
         assert admin not in model.owners
         assert gamma in model.owners
         db.session.delete(model)
@@ -851,14 +851,14 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         gamma = self.get_user("gamma")
         admin = self.get_user("admin")
         chart_id = self.insert_chart("title", [], 1).id
-        model = db.session.query(Slice).get(chart_id)
+        model = db.session.get(Slice, chart_id)
         assert model.owners == []
         chart_data = {"owners": [gamma.id]}
         self.login(username="admin")
         uri = f"api/v1/chart/{chart_id}"
         rv = self.put_assert_metric(uri, chart_data, "put")
         assert rv.status_code == 200
-        model_updated = db.session.query(Slice).get(chart_id)
+        model_updated = db.session.get(Slice, chart_id)
         assert admin not in model_updated.owners
         assert gamma in model_updated.owners
         db.session.delete(model_updated)
@@ -2252,7 +2252,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart.id}"
         rv = self.put_assert_metric(uri, update_payload, "put")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart.id)
+        model = db.session.get(Slice, chart.id)
 
         # Clean up system tags
         tag_list = {tag.id for tag in model.tags if tag.type == TagType.custom}
@@ -2279,7 +2279,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart.id}"
         rv = self.put_assert_metric(uri, update_payload, "put")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart.id)
+        model = db.session.get(Slice, chart.id)
 
         # Clean up system tags
         tag_list = [tag.id for tag in model.tags if tag.type == TagType.custom]
@@ -2311,7 +2311,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart.id}"
         rv = self.put_assert_metric(uri, update_payload, "put")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart.id)
+        model = db.session.get(Slice, chart.id)
 
         # Clean up system tags
         tag_list = {tag.id for tag in model.tags if tag.type == TagType.custom}
@@ -2341,7 +2341,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         uri = f"api/v1/chart/{chart.id}"
         rv = self.put_assert_metric(uri, update_payload, "put")
         assert rv.status_code == 200
-        model = db.session.query(Slice).get(chart.id)
+        model = db.session.get(Slice, chart.id)
 
         # Clean up system tags
         tag_list = [tag.id for tag in model.tags if tag.type == TagType.custom]

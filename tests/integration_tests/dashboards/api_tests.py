@@ -376,7 +376,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
 
         # Set correct role permissions
         gamma_role = security_manager.find_role("Gamma")
-        fixture_dataset = db.session.query(SqlaTable).get(1)
+        fixture_dataset = db.session.get(SqlaTable, 1)
         data_access_pvm = security_manager.add_permission_view_menu(
             "datasource_access", fixture_dataset.perm
         )
@@ -496,7 +496,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
 
         # Set correct role permissions
         gamma_role = security_manager.find_role("Gamma")
-        fixture_dataset = db.session.query(SqlaTable).get(1)
+        fixture_dataset = db.session.get(SqlaTable, 1)
         data_access_pvm = security_manager.add_permission_view_menu(
             "datasource_access", fixture_dataset.perm
         )
@@ -1444,7 +1444,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard_id}"
         rv = self.delete_assert_metric(uri, "delete")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         assert model is None
 
     def test_delete_bulk_dashboards(self):
@@ -1471,7 +1471,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         expected_response = {"message": f"Deleted {dashboard_count} dashboards"}
         assert response == expected_response
         for dashboard_id in dashboard_ids:
-            model = db.session.query(Dashboard).get(dashboard_id)
+            model = db.session.get(Dashboard, dashboard_id)
             assert model is None
 
     def test_delete_bulk_embedded_dashboards(self):
@@ -1511,7 +1511,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         expected_response = {"message": f"Deleted {dashboard_count} dashboards"}
         assert response == expected_response
         for dashboard_id in dashboard_ids:
-            model = db.session.query(Dashboard).get(dashboard_id)
+            model = db.session.get(Dashboard, dashboard_id)
             assert model is None
 
     def test_delete_bulk_dashboards_bad_request(self):
@@ -1605,7 +1605,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard_id}"
         rv = self.client.delete(uri)
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         assert model is None
 
     def test_delete_bulk_dashboard_admin_not_owned(self):
@@ -1634,7 +1634,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         assert response == expected_response
 
         for dashboard_id in dashboard_ids:
-            model = db.session.query(Dashboard).get(dashboard_id)
+            model = db.session.get(Dashboard, dashboard_id)
             assert model is None
 
     @pytest.mark.usefixtures("load_birth_names_dashboard_with_slices")
@@ -1745,7 +1745,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.post_assert_metric(uri, dashboard_data, "post")
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        model = db.session.query(Dashboard).get(data.get("id"))
+        model = db.session.get(Dashboard, data.get("id"))
         # uuid should be returned in the response
         assert "uuid" in data
         assert str(model.uuid) == str(data["uuid"])
@@ -1816,7 +1816,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
             rv = self.post_assert_metric(uri, dashboard_data, "post")
             assert rv.status_code == 201
             data = json.loads(rv.data.decode("utf-8"))
-            dashboard = db.session.query(Dashboard).get(data.get("id"))
+            dashboard = db.session.get(Dashboard, data.get("id"))
             slice_ids = [slc.id for slc in dashboard.slices]
             assert chart.id in slice_ids, (
                 "Chart referenced in position_json was not linked to the "
@@ -1838,7 +1838,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.client.post(uri, json=dashboard_data)
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        model = db.session.query(Dashboard).get(data.get("id"))
+        model = db.session.get(Dashboard, data.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -1852,7 +1852,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.client.post(uri, json=dashboard_data)
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        model = db.session.query(Dashboard).get(data.get("id"))
+        model = db.session.get(Dashboard, data.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -1862,7 +1862,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.client.post(uri, json=dashboard_data)
         assert rv.status_code == 201
         data = json.loads(rv.data.decode("utf-8"))
-        model = db.session.query(Dashboard).get(data.get("id"))
+        model = db.session.get(Dashboard, data.get("id"))
         db.session.delete(model)
         db.session.commit()
 
@@ -1974,7 +1974,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard_id}"
         rv = self.put_assert_metric(uri, self.dashboard_data, "put")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         assert model.dashboard_title == self.dashboard_data["dashboard_title"]
         assert model.slug == self.dashboard_data["slug"]
         assert model.position_json == self.dashboard_data["position_json"]
@@ -2000,7 +2000,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard_id}/filters"
         rv = self.put_assert_metric(uri, self.dashboard_put_filters_data, "put_filters")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         json_metadata = model.json_metadata
         native_filter_config = json.loads(json_metadata)["native_filter_configuration"]
 
@@ -2036,7 +2036,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.put_assert_metric(uri, self.dashboard_put_filters_data, "put_filters")
 
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         json_metadata = model.json_metadata
         native_filter_config = json.loads(json_metadata)["native_filter_configuration"]
 
@@ -2082,7 +2082,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         }
         rv = self.put_assert_metric(uri, put_data, "put_filters")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         json_metadata = model.json_metadata
         native_filter_config = json.loads(json_metadata)["native_filter_configuration"]
 
@@ -2128,7 +2128,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         }
         rv = self.put_assert_metric(uri, put_data, "put_filters")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         json_metadata = model.json_metadata
         native_filter_config = json.loads(json_metadata)["native_filter_configuration"]
 
@@ -2152,7 +2152,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.put_assert_metric(uri, put_data, "put_filters")
         assert rv.status_code == 400
 
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         db.session.delete(model)
         db.session.commit()
 
@@ -2185,7 +2185,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         }
         rv = self.put_assert_metric(uri, put_data, "put_chart_customizations")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         json_metadata = model.json_metadata
         chart_customization_config = json.loads(json_metadata)[
             "chart_customization_config"
@@ -2241,7 +2241,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.put_assert_metric(uri, put_data, "put_chart_customizations")
 
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         json_metadata = model.json_metadata
         chart_customization_config = json.loads(json_metadata)[
             "chart_customization_config"
@@ -2290,7 +2290,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         }
         rv = self.put_assert_metric(uri, put_data, "put_chart_customizations")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         json_metadata = model.json_metadata
         chart_customization_config = json.loads(json_metadata)[
             "chart_customization_config"
@@ -2339,7 +2339,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         }
         rv = self.put_assert_metric(uri, put_data, "put_chart_customizations")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         json_metadata = model.json_metadata
         chart_customization_config = json.loads(json_metadata)[
             "chart_customization_config"
@@ -2408,7 +2408,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         }
         rv = self.put_assert_metric(uri, put_data, "put_chart_customizations")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         json_metadata = model.json_metadata
         chart_customization_config = json.loads(json_metadata)[
             "chart_customization_config"
@@ -2438,7 +2438,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.put_assert_metric(uri, put_data, "put_chart_customizations")
         assert rv.status_code == 400
 
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         db.session.delete(model)
         db.session.commit()
 
@@ -2476,7 +2476,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         assert rv.status_code == 404
 
         self.login(ADMIN_USERNAME)
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         db.session.delete(model)
         db.session.commit()
 
@@ -2489,7 +2489,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         dashboard_id = self.insert_dashboard(
             "title1", "slug1", [admin.id], roles=[admin_role.id]
         ).id
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         self.login(ADMIN_USERNAME)
         uri = f"api/v1/dashboard/{dashboard_id}"
         dashboard_data = {"dashboard_title": "title2"}
@@ -2516,7 +2516,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         dashboard_id = self.insert_dashboard(
             "title1", "slug1", [admin.id], roles=[admin_role.id]
         ).id
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         self.login(ADMIN_USERNAME)
         uri = f"api/v1/dashboard/{dashboard_id}"
         dashboard_data = {"dashboard_title": "title2"}
@@ -2613,7 +2613,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.client.put(uri, json={"slug": self.dashboard_data["slug"]})
         assert rv.status_code == 200
 
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         assert model.json_metadata == self.dashboard_data["json_metadata"]
         assert model.dashboard_title == self.dashboard_data["dashboard_title"]
         assert model.slug == self.dashboard_data["slug"]
@@ -2633,7 +2633,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard_id}"
         rv = self.client.put(uri, json=dashboard_data)
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         assert gamma in model.owners
         assert alpha in model.owners
         for slc in model.slices:
@@ -2654,7 +2654,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard_id}"
         rv = self.client.put(uri, json=dashboard_data)
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         assert gamma in model.owners
         assert admin not in model.owners
         for slc in model.slices:
@@ -2674,7 +2674,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         dashboard_data = {"owners": []}
         rv = self.client.put(uri, json=dashboard_data)
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         assert [] == model.owners
         db.session.delete(model)
         db.session.commit()
@@ -2695,7 +2695,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         dashboard_data = {"owners": [gamma.id]}
         rv = self.client.put(uri, json=dashboard_data)
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard.id)
+        model = db.session.get(Dashboard, dashboard.id)
         assert [gamma] == model.owners
         db.session.delete(model)
         db.session.commit()
@@ -2711,7 +2711,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard_id}"
         rv = self.client.put(uri, json=dashboard_data)
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard_id)
+        model = db.session.get(Dashboard, dashboard_id)
         assert model.dashboard_title == "title1_changed"
         assert model.slug == "slug1-changed"
         db.session.delete(model)
@@ -2766,7 +2766,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.client.put(uri, json=dashboard_data)
         assert rv.status_code == 200
 
-        model = db.session.query(Dashboard).get(dashboard.id)
+        model = db.session.get(Dashboard, dashboard.id)
         assert model.published is True
         assert model.slug == "slug1"
         assert admin in model.owners
@@ -3495,7 +3495,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard.id}"
         rv = self.put_assert_metric(uri, update_payload, "put")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard.id)
+        model = db.session.get(Dashboard, dashboard.id)
 
         # Clean up system tags
         tag_list = [tag.id for tag in model.tags if tag.type == TagType.custom]
@@ -3524,7 +3524,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard.id}"
         rv = self.put_assert_metric(uri, update_payload, "put")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard.id)
+        model = db.session.get(Dashboard, dashboard.id)
 
         # Clean up system tags
         tag_list = [tag.id for tag in model.tags if tag.type == TagType.custom]
@@ -3557,7 +3557,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard.id}"
         rv = self.put_assert_metric(uri, update_payload, "put")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard.id)
+        model = db.session.get(Dashboard, dashboard.id)
 
         # Clean up system tags
         tag_list = [tag.id for tag in model.tags if tag.type == TagType.custom]
@@ -3588,7 +3588,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         uri = f"api/v1/dashboard/{dashboard.id}"
         rv = self.put_assert_metric(uri, update_payload, "put")
         assert rv.status_code == 200
-        model = db.session.query(Dashboard).get(dashboard.id)
+        model = db.session.get(Dashboard, dashboard.id)
 
         # Clean up system tags
         tag_list = [tag.id for tag in model.tags if tag.type == TagType.custom]
@@ -4024,7 +4024,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.client.put(uri, json=colors)
         assert rv.status_code == 200
 
-        updated_dashboard = db.session.query(Dashboard).get(dashboard.id)
+        updated_dashboard = db.session.get(Dashboard, dashboard.id)
         updated_label_colors = json.loads(updated_dashboard.json_metadata).get(
             "label_colors"
         )
@@ -4058,7 +4058,7 @@ class TestDashboardApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCas
         rv = self.client.put(uri, json=colors)
         assert rv.status_code == 200
 
-        updated_dashboard = db.session.query(Dashboard).get(dashboard.id)
+        updated_dashboard = db.session.get(Dashboard, dashboard.id)
         updated_color_scheme = json.loads(updated_dashboard.json_metadata).get(
             "color_scheme"
         )

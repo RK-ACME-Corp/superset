@@ -384,7 +384,7 @@ class TestChartsCreateCommand(SupersetTestCase):
         }
         command = CreateChartCommand(chart_data)
         chart = command.run()
-        chart = db.session.query(Slice).get(chart.id)
+        chart = db.session.get(Slice, chart.id)
         assert chart.viz_type == "new_viz_type"
         json_params = json.loads(chart.params)
         assert json_params == {"viz_type": "new_viz_type"}
@@ -406,7 +406,7 @@ class TestChartsUpdateCommand(SupersetTestCase):
         mock_u_g.user = mock_c_g.user = mock_sm_g.user = user
 
         # Explicitly set last_saved_at to None to test None -> datetime transition
-        chart_to_update = db.session.query(Slice).get(pk)
+        chart_to_update = db.session.get(Slice, pk)
         chart_to_update.last_saved_at = None
         db.session.commit()
 
@@ -416,7 +416,7 @@ class TestChartsUpdateCommand(SupersetTestCase):
         )
         command.run()
 
-        chart = db.session.query(Slice).get(pk)
+        chart = db.session.get(Slice, pk)
         assert chart.last_saved_at is not None
         assert chart.last_saved_by == user
 
@@ -430,7 +430,7 @@ class TestChartsUpdateCommand(SupersetTestCase):
         user = security_manager.find_user(username="admin")
         mock_u_g.user = mock_c_g.user = mock_sm_g.user = user
 
-        chart_to_update = db.session.query(Slice).get(pk)
+        chart_to_update = db.session.get(Slice, pk)
         chart_to_update.last_saved_at = datetime.now()
         db.session.commit()
         # Refresh to get the database value with MySQL's truncated microseconds
@@ -445,7 +445,7 @@ class TestChartsUpdateCommand(SupersetTestCase):
         time.sleep(1)
         command.run()
 
-        chart = db.session.query(Slice).get(pk)
+        chart = db.session.get(Slice, pk)
         assert chart.last_saved_at.replace(microsecond=0) != last_saved_before.replace(
             microsecond=0
         )
@@ -475,7 +475,7 @@ class TestChartsUpdateCommand(SupersetTestCase):
         }
         command = UpdateChartCommand(pk, json_obj)
         command.run()
-        chart = db.session.query(Slice).get(pk)
+        chart = db.session.get(Slice, pk)
         assert chart.query_context == query_context
         assert len(chart.owners) == 1
         assert chart.owners[0] == admin
@@ -565,7 +565,7 @@ class TestChartsUpdateCommand(SupersetTestCase):
         command.run()
 
         # Should succeed - alpha can update their chart
-        updated_chart = db.session.query(Slice).get(chart.id)
+        updated_chart = db.session.get(Slice, chart.id)
         assert updated_chart.description == "Updated description"
 
         # Clean up
@@ -661,7 +661,7 @@ class TestChartsUpdateCommand(SupersetTestCase):
         command.run()
 
         # Should succeed - admin has access to all dashboards
-        updated_chart = db.session.query(Slice).get(chart.id)
+        updated_chart = db.session.get(Slice, chart.id)
         assert alpha_dashboard in updated_chart.dashboards
 
         # Clean up
