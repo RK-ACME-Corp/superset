@@ -1246,7 +1246,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         `changed_on` timestamps are monotonically non-increasing. The original
         report shows the humanized column visually out of order, suggesting
         the sort key didn't actually reflect the timestamp."""
-        from datetime import datetime, timedelta
+        from datetime import datetime, timedelta, timezone
 
         admin = self.get_user("admin")
         # Insert two charts with distinct changed_on timestamps. Use raw UPDATE
@@ -1265,7 +1265,7 @@ class TestChartApi(ApiOwnersTestCaseMixin, InsertChartMixin, SupersetTestCase):
         # accidentally sorts by the humanized text instead of the column,
         # this test fails. (Pairs like "now"/"2 days ago" don't discriminate
         # because 'n' > '2' lexically agrees with newest-first.)
-        now = datetime.utcnow()
+        now = datetime.now(tz=timezone.utc)
         chart_older.changed_on = now - timedelta(hours=5)
         chart_newer.changed_on = now - timedelta(hours=3)
         db.session.commit()
