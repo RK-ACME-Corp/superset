@@ -73,15 +73,6 @@ class TimeDeltaAmbiguousError(ValidationError):
         )
 
 
-class DatabaseNotFoundValidationError(ValidationError):
-    """
-    Marshmallow validation error for database does not exist
-    """
-
-    def __init__(self) -> None:
-        super().__init__(_("Database does not exist"), field_name="database")
-
-
 class DashboardsNotFoundValidationError(ValidationError):
     """
     Marshmallow validation error for dashboards don't exist

@@ -23,9 +23,9 @@ from marshmallow import ValidationError
 
 from superset import security_manager
 from superset.commands.base import UpdateMixin
+from superset.commands.exceptions import DatabaseNotFoundValidationError
 from superset.commands.report.base import BaseReportScheduleCommand
 from superset.commands.report.exceptions import (
-    DatabaseNotFoundValidationError,
     ReportScheduleAlertRequiredDatabaseValidationError,
     ReportScheduleDatabaseNotAllowedValidationError,
     ReportScheduleForbiddenError,
