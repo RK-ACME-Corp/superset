@@ -22,9 +22,9 @@ from flask import g
 from marshmallow import ValidationError
 
 from superset.commands.base import CreateMixin
+from superset.commands.exceptions import DatabaseNotFoundValidationError
 from superset.commands.report.base import BaseReportScheduleCommand
 from superset.commands.report.exceptions import (
-    DatabaseNotFoundValidationError,
     ReportScheduleAlertRequiredDatabaseValidationError,
     ReportScheduleCreateFailedError,
     ReportScheduleCreationMethodUniquenessValidationError,

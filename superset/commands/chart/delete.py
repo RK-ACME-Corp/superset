@@ -14,14 +14,9 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-import logging
-from functools import partial
-from typing import Optional
-
 from flask_babel import lazy_gettext as _
 
-from superset import security_manager
-from superset.commands.base import BaseCommand
+from superset.commands.base import BaseBulkDeleteCommand
 from superset.commands.chart.exceptions import (
     ChartDeleteFailedError,
     ChartDeleteFailedReportsExistError,
@@ -30,30 +25,14 @@ from superset.commands.chart.exceptions import (
 )
 from superset.daos.chart import ChartDAO
 from superset.daos.report import ReportScheduleDAO
-from superset.exceptions import SupersetSecurityException
-from superset.models.slice import Slice
-from superset.utils.decorators import on_error, transaction
-
-logger = logging.getLogger(__name__)
 
 
-class DeleteChartCommand(BaseCommand):
-    def __init__(self, model_ids: list[int]):
-        self._model_ids = model_ids
-        self._models: Optional[list[Slice]] = None
+class DeleteChartCommand(BaseBulkDeleteCommand):
+    dao_class = ChartDAO
+    not_found_error = ChartNotFoundError
+    delete_failed_error = ChartDeleteFailedError
 
-    @transaction(on_error=partial(on_error, reraise=ChartDeleteFailedError))
-    def run(self) -> None:
-        self.validate()
-        assert self._models
-        ChartDAO.delete(self._models)
-
-    def validate(self) -> None:
-        # Validate/populate model exists
-        self._models = ChartDAO.find_by_ids(self._model_ids)
-        if not self._models or len(self._models) != len(self._model_ids):
-            raise ChartNotFoundError()
-        # Check there are no associated ReportSchedules
+    def validate_additional(self) -> None:
         if reports := ReportScheduleDAO.find_by_chart_ids(self._model_ids):
             report_names = [report.name for report in reports]
             raise ChartDeleteFailedReportsExistError(
@@ -62,9 +41,4 @@ class DeleteChartCommand(BaseCommand):
                     report_names=",".join(report_names),
                 )
             )
-        # Check ownership
-        for model in self._models:
-            try:
-                security_manager.raise_for_ownership(model)
-            except SupersetSecurityException as ex:
-                raise ChartForbiddenError() from ex
+        self.check_ownership(ChartForbiddenError)

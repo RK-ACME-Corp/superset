@@ -29,7 +29,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from superset import is_feature_enabled, security_manager
 from superset.commands.base import BaseCommand, UpdateMixin
 from superset.commands.dataset.exceptions import (
-    DatabaseNotFoundValidationError,
     DatasetColumnNotFoundValidationError,
     DatasetColumnsDuplicateValidationError,
     DatasetColumnsExistsValidationError,
@@ -44,6 +43,7 @@ from superset.commands.dataset.exceptions import (
     DatasetUpdateFailedError,
     MultiCatalogDisabledValidationError,
 )
+from superset.commands.exceptions import DatabaseNotFoundValidationError
 from superset.connectors.sqla.models import SqlaTable, validate_stored_expression
 from superset.daos.dataset import DatasetDAO
 from superset.datasets.schemas import FolderSchema

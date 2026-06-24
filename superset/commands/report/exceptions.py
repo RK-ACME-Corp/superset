@@ -30,15 +30,6 @@ from superset.exceptions import SupersetError, SupersetErrorsException
 from superset.reports.models import ReportScheduleType
 
 
-class DatabaseNotFoundValidationError(ValidationError):
-    """
-    Marshmallow validation error for database does not exist
-    """
-
-    def __init__(self) -> None:
-        super().__init__(_("Database does not exist"), field_name="database")
-
-
 class ReportScheduleDatabaseNotAllowedValidationError(ValidationError):
     """
     Marshmallow validation error for database reference on a Report type schedule

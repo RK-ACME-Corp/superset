@@ -23,13 +23,13 @@ from marshmallow import ValidationError
 
 from superset.commands.base import BaseCommand, CreateMixin
 from superset.commands.dataset.exceptions import (
-    DatabaseNotFoundValidationError,
     DatasetCreateFailedError,
     DatasetDataAccessIsNotAllowed,
     DatasetExistsValidationError,
     DatasetInvalidError,
     TableNotFoundValidationError,
 )
+from superset.commands.exceptions import DatabaseNotFoundValidationError
 from superset.daos.dataset import DatasetDAO
 from superset.exceptions import SupersetParseError, SupersetSecurityException
 from superset.extensions import security_manager

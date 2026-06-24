@@ -45,15 +45,6 @@ class MultiCatalogDisabledValidationError(ValidationError):
         )
 
 
-class DatabaseNotFoundValidationError(ValidationError):
-    """
-    Marshmallow validation error for database does not exist
-    """
-
-    def __init__(self) -> None:
-        super().__init__([_("Database does not exist")], field_name="database")
-
-
 class DatasetExistsValidationError(ValidationError):
     """
     Marshmallow validation error for dataset already exists
