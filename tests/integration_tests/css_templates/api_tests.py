@@ -250,7 +250,7 @@ class TestCssTemplateApi(SupersetTestCase):
         assert rv.status_code == 201
 
         css_template_id = data.get("id")
-        model = db.session.query(CssTemplate).get(css_template_id)
+        model = db.session.get(CssTemplate, css_template_id)
         for key in post_data:
             assert getattr(model, key) == data["result"][key]
 
@@ -279,7 +279,7 @@ class TestCssTemplateApi(SupersetTestCase):
         rv = self.put_assert_metric(uri, put_data, "put")
         assert rv.status_code == 200
 
-        model = db.session.query(CssTemplate).get(css_template.id)
+        model = db.session.get(CssTemplate, css_template.id)
         assert model.template_name == "template_name_changed"
         assert model.css == "css_changed"
 
@@ -316,7 +316,7 @@ class TestCssTemplateApi(SupersetTestCase):
         rv = self.delete_assert_metric(uri, "delete")
         assert rv.status_code == 200
 
-        model = db.session.query(CssTemplate).get(css_template.id)
+        model = db.session.get(CssTemplate, css_template.id)
         assert model is None
 
     @pytest.mark.usefixtures("create_css_templates")
@@ -365,7 +365,7 @@ class TestCssTemplateApi(SupersetTestCase):
         response = json.loads(rv.data.decode("utf-8"))
         expected_response = {"message": f"Deleted {len(css_template_ids)} css template"}
         assert response == expected_response
-        css_template_ = db.session.query(CssTemplate).get(css_template_ids[0])
+        css_template_ = db.session.get(CssTemplate, css_template_ids[0])
         assert css_template_ is None
 
     def test_delete_bulk_css_template_bad_request(self):

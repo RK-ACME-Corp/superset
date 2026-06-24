@@ -65,7 +65,7 @@ class TestSavedQueryApi(SupersetTestCase):
     ) -> SavedQuery:
         database = None
         if db_id:
-            database = db.session.query(Database).get(db_id)
+            database = db.session.get(Database, db_id)
         query = SavedQuery(
             database=database,
             created_by=created_by,
@@ -691,7 +691,7 @@ class TestSavedQueryApi(SupersetTestCase):
         assert rv.status_code == 201
 
         saved_query_id = data.get("id")
-        model = db.session.query(SavedQuery).get(saved_query_id)
+        model = db.session.get(SavedQuery, saved_query_id)
         for key in post_data:
             assert getattr(model, key) == data["result"][key]
 
@@ -718,7 +718,7 @@ class TestSavedQueryApi(SupersetTestCase):
         rv = self.client.put(uri, json=put_data)
         assert rv.status_code == 200
 
-        model = db.session.query(SavedQuery).get(saved_query.id)
+        model = db.session.get(SavedQuery, saved_query.id)
         assert model.label == "label_changed"
         assert model.schema == "schema_changed"
 
@@ -753,7 +753,7 @@ class TestSavedQueryApi(SupersetTestCase):
         rv = self.client.delete(uri)
         assert rv.status_code == 200
 
-        model = db.session.query(SavedQuery).get(saved_query.id)
+        model = db.session.get(SavedQuery, saved_query.id)
         assert model is None
 
     @pytest.mark.usefixtures("create_saved_queries")
@@ -805,7 +805,7 @@ class TestSavedQueryApi(SupersetTestCase):
         response = json.loads(rv.data.decode("utf-8"))
         expected_response = {"message": f"Deleted {len(saved_query_ids)} saved query"}
         assert response == expected_response
-        saved_query_ = db.session.query(SavedQuery).get(saved_query_ids[0])
+        saved_query_ = db.session.get(SavedQuery, saved_query_ids[0])
         assert saved_query_ is None
 
     def test_delete_bulk_saved_query_bad_request(self):

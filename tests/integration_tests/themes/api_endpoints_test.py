@@ -131,7 +131,7 @@ class TestThemeApiEndpoints(SupersetTestCase):
         assert response.status_code == 200
 
         # Verify theme was updated
-        updated_theme = db.session.query(Theme).get(theme.id)
+        updated_theme = db.session.get(Theme, theme.id)
         assert updated_theme.theme_name == "Updated Theme"
         assert '"algorithm": "dark"' in updated_theme.json_data
 
@@ -166,7 +166,7 @@ class TestThemeApiEndpoints(SupersetTestCase):
         assert response.status_code == 200
 
         # Verify only editable fields were updated
-        updated_theme = db.session.query(Theme).get(theme.id)
+        updated_theme = db.session.get(Theme, theme.id)
         assert updated_theme.theme_name == "Updated Theme"
         assert updated_theme.is_system is False  # Should remain unchanged
         assert updated_theme.uuid == original_uuid  # Should remain unchanged
@@ -242,8 +242,8 @@ class TestThemeApiEndpoints(SupersetTestCase):
         assert response.status_code == 403  # Should fail due to system theme protection
 
         # Verify both themes still exist
-        assert db.session.query(Theme).get(regular_theme.id) is not None
-        assert db.session.query(Theme).get(system_theme.id) is not None
+        assert db.session.get(Theme, regular_theme.id) is not None
+        assert db.session.get(Theme, system_theme.id) is not None
 
     def test_bulk_delete_regular_themes_only(self):
         """Test bulk delete works with regular themes only"""
@@ -270,8 +270,8 @@ class TestThemeApiEndpoints(SupersetTestCase):
         assert response.status_code == 200
 
         # Verify themes were deleted
-        assert db.session.query(Theme).get(theme1.id) is None
-        assert db.session.query(Theme).get(theme2.id) is None
+        assert db.session.get(Theme, theme1.id) is None
+        assert db.session.get(Theme, theme2.id) is None
 
     def test_get_theme_includes_new_fields(self):
         """Test GET theme includes is_system and uuid fields"""

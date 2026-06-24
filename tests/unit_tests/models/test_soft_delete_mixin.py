@@ -311,7 +311,7 @@ def test_get_without_bypass_filters_out_soft_deleted_row(
     session.flush()
     session.expunge_all()
 
-    result = session.query(_SoftDeletable).get(obj_id)
+    result = session.get(_SoftDeletable, obj_id)
     assert result is None, (
         ".get() with no bypass and an empty identity map should be filtered "
         "by the listener"

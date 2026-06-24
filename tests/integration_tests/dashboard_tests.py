@@ -126,7 +126,7 @@ class TestDashboard(SupersetTestCase):
 
         # Cleanup
         created_dashboard_id = int(group[1])
-        created_dashboard = db.session.query(Dashboard).get(created_dashboard_id)
+        created_dashboard = db.session.get(Dashboard, created_dashboard_id)
         db.session.delete(created_dashboard)
         db.session.commit()
 

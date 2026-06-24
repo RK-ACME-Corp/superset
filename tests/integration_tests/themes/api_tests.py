@@ -259,7 +259,7 @@ class TestThemeApi(SupersetTestCase):
         assert rv.status_code == 201
 
         theme_id = data.get("id")
-        model = db.session.query(Theme).get(theme_id)
+        model = db.session.get(Theme, theme_id)
         for key in post_data:
             assert getattr(model, key) == data["result"][key]
 
@@ -286,7 +286,7 @@ class TestThemeApi(SupersetTestCase):
         rv = self.put_assert_metric(uri, put_data, "put")
         assert rv.status_code == 200
 
-        model = db.session.query(Theme).get(theme.id)
+        model = db.session.get(Theme, theme.id)
         assert model.theme_name == "updated_theme_name"
         assert model.json_data == '{"primary": "#28a745", "secondary": "#ffc107"}'
 
@@ -326,7 +326,7 @@ class TestThemeApi(SupersetTestCase):
         rv = self.delete_assert_metric(uri, "delete")
         assert rv.status_code == 200
 
-        model = db.session.query(Theme).get(theme.id)
+        model = db.session.get(Theme, theme.id)
         assert model is None
 
     @pytest.mark.usefixtures("create_themes")
@@ -379,7 +379,7 @@ class TestThemeApi(SupersetTestCase):
         response = json.loads(rv.data.decode("utf-8"))
         expected_response = {"message": f"Deleted {len(theme_ids)} theme"}
         assert response == expected_response
-        theme_ = db.session.query(Theme).get(theme_ids[0])
+        theme_ = db.session.get(Theme, theme_ids[0])
         assert theme_ is None
 
     def test_delete_bulk_theme_bad_request(self):
