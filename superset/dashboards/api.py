@@ -502,7 +502,7 @@ class DashboardRestApi(CustomTagsOptimizationMixin, BaseSupersetModelRestApi):
         if q := request.args.get("q"):
             try:
                 args = rison.loads(q)
-            except Exception:
+            except (ValueError, TypeError):
                 return self.response_400(message="Invalid rison query parameter")
             if isinstance(args, dict):
                 columns = args.get("columns")

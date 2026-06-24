@@ -132,8 +132,8 @@ def get_chart_dataframe(
                     df[result["result"][0]["colnames"][i]] = df[
                         result["result"][0]["colnames"][i]
                     ].astype("datetime64[ms]")
-    except BaseException as err:
-        logger.error(err)
+    except (ValueError, TypeError, KeyError, IndexError) as err:
+        logger.warning("Failed to convert temporal columns to datetime: %s", err)
 
     # rebuild hierarchical columns and index
     df.columns = pd.MultiIndex.from_tuples(

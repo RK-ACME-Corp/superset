@@ -284,7 +284,7 @@ def add_sqllab_custom_filters(form_data: dict[Any, Any]) -> Any:
                     if filters:
                         form_data.update({"filters": filters})
     except (TypeError, json.JSONDecodeError):
-        data = {}
+        logger.debug("Failed to parse SQLLab custom filters from request data")
 
 
 def get_datasource_info(

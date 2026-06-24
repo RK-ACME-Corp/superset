@@ -222,6 +222,10 @@ class ImportExamplesCommand(ImportModelsCommand):
                 try:
                     config = update_id_refs(config, chart_ids, dataset_info)
                 except KeyError:
+                    logger.warning(
+                        "Skipping dashboard %s: missing ID references",
+                        file_name,
+                    )
                     continue
 
                 dashboard = import_dashboard(

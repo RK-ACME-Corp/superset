@@ -553,7 +553,7 @@ def markdown(raw: str, markup_wrap: bool | None = False) -> str:
     # nh3 preserves supported link attributes and enforces a safe rel value.
     safe = nh3.clean(safe, tags=safe_markdown_tags, attributes=safe_markdown_attrs)
     if markup_wrap:
-        safe = Markup(safe)
+        safe = Markup(safe)  # noqa: S704
     return safe
 
 
@@ -627,7 +627,8 @@ def sanitize_url(url: str) -> str:
         # Block everything else (javascript:, data:, etc.)
         return ""
 
-    except Exception:
+    except ValueError:
+        logger.warning("Failed to parse URL: %s", url)
         return ""
 
 

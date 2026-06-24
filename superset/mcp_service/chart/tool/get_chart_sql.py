@@ -195,6 +195,11 @@ def _sql_from_saved_query_context(
     except SupersetSecurityException:
         raise  # Let access denials propagate for consistent error handling
     except (SupersetException, CommandException, TypeError, ValueError):
+        logger.debug(
+            "Failed to extract SQL from saved query_context for chart %s",
+            chart.id,
+            exc_info=True,
+        )
         return None
 
 

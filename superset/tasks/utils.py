@@ -301,6 +301,7 @@ def parse_properties(json_str: str | None) -> TaskProperties:
             return cast(TaskProperties, raw)
         return {}
     except (json.JSONDecodeError, TypeError):
+        logger.debug("Failed to deserialize task properties from JSON")
         return {}
 
 
